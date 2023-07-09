@@ -29,7 +29,7 @@ sys.argv = ['', '--commandlinemode']
 infer_web = __import__('infer-web')
 
 # Load the model
-_ = infer_web.get_vc(args.voice)
+_ = infer_web.get_vc(args.voice, None, None)
 
 # Perform inference
 _, (output_samplerate, audio_output) = infer_web.vc_single(args.sid,
