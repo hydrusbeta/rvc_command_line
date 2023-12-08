@@ -1,6 +1,8 @@
 import argparse
 import soundfile
 import sys
+from infer.modules.vc.modules import VC
+from configs.config import Config
 
 # todo: Add options for batch processing
 
@@ -25,25 +27,25 @@ args = parser.parse_args()
 # argument" error and insert the "commandlinemode" argument which will prevent the server from automatically starting.
 sys.argv = ['', '--commandlinemode']
 
-# infer-web.py has a hyphen in its name, so we must import it using the __import__ magic method.
-infer_web = __import__('infer-web')
-
 # Load the model
-_ = infer_web.get_vc(args.voice, None, None)
+config = Config()
+# todo override config.device with "cpu" or "cuda:#". Alternatively, use RVC's built-in CLI.
+vc = VC(config)
+_ = vc.get_vc(args.voice, None, None)
 
 # Perform inference
-_, (output_samplerate, audio_output) = infer_web.vc_single(args.sid,
-                                                           args.input_filepath,
-                                                           args.transpose,
-                                                           args.f0_filepath,
-                                                           args.f0_method,
-                                                           args.index_filepath,
-                                                           '',
-                                                           args.index_ratio,
-                                                           args.filter_radius,
-                                                           args.resample_rate,
-                                                           args.rms_mix_ratio,
-                                                           args.protect)
+_, (output_samplerate, audio_output) = vc.vc_single(args.sid,
+                                                    args.input_filepath,
+                                                    args.transpose,
+                                                    args.f0_filepath,
+                                                    args.f0_method,
+                                                    args.index_filepath,
+                                                    '',
+                                                    args.index_ratio,
+                                                    args.filter_radius,
+                                                    args.resample_rate,
+                                                    args.rms_mix_ratio,
+                                                    args.protect)
 
 # Write the output file
 soundfile.write(args.output_filepath, audio_output, output_samplerate, format='FLAC')
